@@ -1,0 +1,264 @@
+---
+title: "The Machine Learning Landscape"
+subtitle: "AI Bootcamp in Biotechnology -- Rutgers and KAIMRC Academy"
+author: | 
+  | W. Evan Johnson, Ph.D.
+  | Professor, Division of Infectious Disease
+  | Director, Center for Data Science
+  | Associate Director, Center for Biomedical Informatics and Health AI
+  | Rutgers University -- New Jersey Medical School
+  | w.evan.johnson@rutgers.edu
+date: "`r Sys.Date()`"
+header-includes:
+  - \usepackage{amsmath}
+  - \usepackage{xcolor}
+  - \setbeamercolor{frametitle}{fg=black}
+  - \usepackage{graphicx}
+  - \usebackgroundtemplate{\includegraphics[width=\paperwidth]{figs/RH_template_Page_2.png}}
+  - \addtobeamertemplate{frametitle}{\vspace*{.25in}}{\vspace*{.25in}}
+  - \setbeamerfont{frametitle}{size=\huge}
+  - \usepackage{tikz}
+output: 
+  beamer_presentation
+classoption: aspectratio=169 
+editor_options: 
+  chunk_output_type: console
+tables: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align="center")
+img_path <- "figs/"
+```
+
+
+## Things you should know about this bootcamp
+
+\Large
+
+* Lots of diverse material and new concepts in a single day.
+    + Programming and machine learning are __NOT__ spectator sports -- you
+      need to practice these skills over and over again.
+* All materials are on GitHub:
+    + [https://github.com/wevanjohnson/2026_09_Saudi_AI](https://github.com/wevanjohnson/2026_09_Saudi_AI)
+* Each lecture has a matching hands-on workshop to work through on your own.
+* Helpful background:
+    + Introductory statistics and molecular biology
+    + Basic R programming: `tidyverse`, `ggplot2`, R Markdown
+* Examples are in R -- the concepts are language-agnostic, and everything
+  here has a `scikit-learn` equivalent.
+* Setup instructions and the package list are in the repository `README`.
+* Questions any time: <w.evan.johnson@rutgers.edu>
+
+
+# Introduction to Machine Learning and Data Science 
+
+##
+\center
+![](figs/bigdata.png){height="70%"}
+
+Big Data has fundamentally changed how we look at science and business. Along with advances in analytic methods, they are providing unparalleled insights into our physical world and society
+
+## Structured vs. Unstructured data
+\center
+![](figs/data_collage.png){height="70%"}
+
+
+## Structured vs. Unstructured data
+\center
+![](figs/SummarizedExperiment.png){height="70%"}
+
+## Data Science Revolution
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+	\includegraphics[width=2.5in]{figs/ds_venn.png}
+	\end{column}
+	
+	\begin{column}{0.5\textwidth}
+{
+	\begin{itemize}
+	\item Few have all the skills	
+	\item Flexibility in area (business, strategy, health care) and conditions
+	\item Data science makes companies and data better! 
+	\end{itemize}
+}
+	\end{column}
+\end{columns}
+
+##
+\center
+![](figs/modds.png)
+
+## Data Science Process
+\center
+![](figs/dsprocess.png){height="70%"}
+
+## Scientific Cycle for Data Science
+Johnson Lab Approach to Science:
+\center
+![](figs/ds_model.png){height="90%"}
+
+
+# Keeping the "Science" in Data Science
+
+## Domain Knowledge
+
+**Domain knowledge** is knowledge of a specific, specialized discipline or field, in contrast to general (or domain-independent) knowledge. For example, in describing a software engineer may have general knowledge of computer programming as well as domain knowledge about developing programs for a particular industry. People with domain knowledge are often regarded as specialists or experts in their field. (Wikipedia!)
+
+## Analytics Hierarchy
+\center
+![](figs/dataflow1.png){height="70%"}
+
+
+## Analytics Hierarchy
+\center
+![](figs/dataflow2.png){height="70%"}
+
+## Formal definitions
+\Large
+**Machine learning** is a computer’s way of learning from examples, and it is one of the most useful tools we have for the construction of _artificially intelligent_ systems
+
+**Artificial intelligence** is a term used when machines (or computers) can mimic functions that humans can do.
+
+  - Example: Learning and problem solving
+
+## Formal definitions
+\Large
+An **Algorithm** is a sequence of actions that are “self-contained”
+
+* Effective method for calculation
+  + Finite steps/instructions
+  + When applied, it produces a correct answer
+  + The instructions need to be followed
+  + In principle, it can be done by a “human”
+
+## Formal definitions
+\Large
+A **Computer Algorithm** is a sequence of actions that are “self-contained”
+
+* Effective method for calculation
+  + Finite steps/instructions
+  + When applied, it produces a correct answer
+  + The instructions need to be followed
+  + In principle, it can be done by a “computer”
+
+## Formal definitions
+\Large
+* Computer Code:
+  + Human readable text
+  + Fully executable description of a software system
+
+* What’s in the data?
+  + Datum: “(thing) given”
+  + Data is useful only when it has been analyzed
+
+## Supervised vs unsupervised learning
+\Large
+Machine learning algorithms are generally classified into two categories:
+
+1. **Supervised:** Outcomes used to create the predictor, e.g., classification.
+2. **Unsupervised:** Don't know outcomes, rather interestedin discovering groups, e.g., clustering.
+
+## Choosing a method for your research question
+
+\small
+
+| If you are asking... | Start with |
+| :--- | :--- |
+| Which group does this sample belong to? | **Classification** -- logistic regression, SVM, random forest, XGBoost |
+| How much, how many, how long? | **Regression** -- linear and penalized regression, regression trees, GBM |
+| Are there subgroups I did not define? | **Clustering** -- $k$-means, hierarchical clustering |
+| Can I see structure in high dimensions? | **Dimension reduction** -- PCA, NMF, UMAP |
+| Which variables actually matter? | **Feature selection** -- LASSO, elastic net, variable importance, SHAP |
+| Images, free text, or sequences? | **Deep learning** -- CNNs, RNNs, transformers |
+
+## What actually decides it
+
+\Large
+The question narrows the choice. Four constraints usually settle it:
+
+\vskip .1in
+\large
+
+1. **Is the outcome labeled?** No labels means unsupervised, whatever you
+   had hoped to do.
+
+2. **How many samples per feature?** When $p \gg n$, penalized and kernel
+   methods will beat deep learning.
+
+3. **Do you need to explain the model?** A clinician, a regulator, or a
+   reviewer may need the reason, not just the prediction.
+
+4. **How much signal do you expect?** Flexible models find structure
+   whether or not it is there -- which is what the evaluation session is about.
+
+
+## Formal definitions
+\Large
+**Training and Test sets:** We usually split our dataset into two parts, one for model creation (train) and one for validation (test)
+
+## Formal definitions
+\Large
+**Training and Test sets:** We usually split our dataset into two parts, one for model creation (train) and one for validation (test)
+
+**Cross-validation:** Iterative retraining of the predictor on multiple partitions of training set
+\center
+![](figs/cv.png){height=40%}
+
+## Formal definitions
+\Large
+**Confusion matrix:** tabulates each combination of predicted and actual values:
+![](figs/confusion.png)
+
+**Overfitting:** Dangerously over-optimistic assessments---this is a _big problem_ in machine learning
+
+## The caret package in R
+\Large
+The `caret` package in R has several useful functions for building and assessing machine learning methods.
+
+- _Examples:_
+
+## Regularization in Machine Learning
+\Large
+In regression analysis, the features are estimated using coefficients while modeling. In small sample sizes or noisy data coefficient estimates could be anecdotally incorrect (e.g., overfitting) or innacurate.  
+
+If the estimates can be restricted, penalized, or shrunk towards zero, then the impact of insignificant features might be reduced and would prevent models from high variance with a stable fit.\footnote{Adapted from: https://www.analyticssteps.com/blogs/l2-and-l1-regularization-machine-learning}
+
+## Regularization in Machine Learning
+\Large
+**Regularization** is the most used technique to penalize complex models in machine learning, it is deployed for reducing overfitting (or, contracting generalization errors) by putting small network weights into the model (adding a small amount of biad). Also, it enhances the performance of models for new inputs.\footnote{Source: https://www.analyticssteps.com/blogs/l2-and-l1-regularization-machine-learning}
+
+## Regularization in Machine Learning
+\Large
+Examples of regularization in machine learning, include:
+
+* Regression: Penalizing coefficients to create parsimonious models (variable selection)
+* K-means: Restricting the segments for avoiding redundant groups.
+* Neural networks: Confining the complexity (weights) of a model.
+* Random forests: Reducing the depths of tree and branches (new features)
+
+
+## Hands-on practice
+
+\Large
+Everything in this session has a matching workshop you can work through at your own pace:
+
+\vskip .1in
+\large
+
+**`workshop_1`**
+
+- Dimension reduction: PCA and UMAP
+- Building up a plot with `ggplot2`
+- Comparing differential expression methods
+
+\vskip .2in
+\normalsize
+All workshops are in the course repository, with the R Markdown source and a rendered HTML version.
+
+## Session info
+\tiny
+```{r session info}
+sessionInfo()
+```
+

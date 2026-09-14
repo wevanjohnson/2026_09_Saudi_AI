@@ -1,0 +1,39 @@
+## Working materials -- not shared with participants
+extra_files/
+
+## Markdown log files
+*.log
+*/*.log
+*/*/*.log
+## R History files
+.Rhistory
+*/.Rhistory
+*/*/.Rhistory
+.Rapp.history
+## DS_Store files
+.DS_Store
+*/.DS_Store
+*/*/.DS_Store
+## Office lock files
+~$*
+*/~$*
+## other files that are made by R markdown or latex:
+*/*.nav
+*/*.aux
+*/*.snm
+*/*.toc
+*/*/*.nav
+*/*/*.aux
+*/*/*.snm
+*/*/*.toc
+*_files/
+*_cache/
+.Rproj.user
+.quarto/
+
+## Planning materials -- not for participants
+Outlook-Screenshot.png
+SA AI_Bootcamp_RUTGERS_KAIMRC AM UPDATED.docx
+
+## Too large for GitHub (100 MiB hard limit) -- share these another way
+session_2_genai_agentic/2026_09_RGMBS_AI.pptx
