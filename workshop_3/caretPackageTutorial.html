@@ -11,7 +11,7 @@
 
 <meta name="author" content="W. Evan Johnson" />
 
-<meta name="date" content="2026-06-17" />
+<meta name="date" content="2026-09-15" />
 
 <title>Machine Learning Tutorial Using caret</title>
 
@@ -4089,7 +4089,7 @@ border-radius: 0px;
 <code>caret</code></h1>
 <h3 class="subtitle">Applied to the TB NanoString data</h3>
 <h4 class="author">W. Evan Johnson</h4>
-<h4 class="date">2026-06-17</h4>
+<h4 class="date">2026-09-15</h4>
 
 </div>
 
@@ -10528,12 +10528,136 @@ ens_roc &lt;- roc(test_data$TB_Status, ens_probs, levels = rev(levels(test_data$
 <pre class="r"><code>auc(ens_roc)</code></pre>
 <pre><code>## Area under the curve: 0.9623</code></pre>
 </div>
+<div id="data-leakage-a-demonstration" class="section level2">
+<h2>12. Data Leakage: a demonstration</h2>
+<p>Every model above was cross-validated honestly:
+<code>caret::train()</code> refits the whole pipeline inside each
+resampling fold. This section shows what happens when a step escapes
+that loop.</p>
+<p>The most common escape in omics work is <strong>feature
+selection</strong>. You rank genes on the full dataset, keep the best
+ones, and then cross-validate only the classifier. The selection step
+has already seen every sample, so the cross-validation is scoring a
+model that was built with knowledge of its own test set.</p>
+<p>To show the effect cleanly, we do two things:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Randomize the outcome.</strong> After shuffling
+<code>TB_Status</code> there is genuinely nothing to predict — any AUC
+above 0.5 is an artifact.</li>
+<li><strong>Add noise genes</strong>, so that <span class="math inline">\(p \gg n\)</span> as in a genome-wide study. The
+107-gene NanoString panel is curated, so nearly every gene in it is real
+signal and there is little noise for a leaky pipeline to exploit.</li>
+</ol>
+<pre class="r"><code>set.seed(1)
+
+y &lt;- factor(TBnanostring$TB_Status)
+X &lt;- as.matrix(TBnanostring[, -1])
+
+## there is now NO signal to find
+y &lt;- sample(y)
+
+## add noise genes: 179 samples x 2000 &quot;genes&quot;
+X &lt;- cbind(X, matrix(rnorm(nrow(X) * 1893), nrow(X)))
+colnames(X) &lt;- paste0(&quot;g&quot;, seq_len(ncol(X)))
+dim(X)</code></pre>
+<pre><code>## [1]  179 2000</code></pre>
+<p>Two small helpers — a two-sample t-statistic for every column, and an
+AUC computed from ranks so we do not need another package:</p>
+<pre class="r"><code>tscore &lt;- function(X, y) {
+  a &lt;- X[y == levels(y)[1], , drop = FALSE]
+  b &lt;- X[y == levels(y)[2], , drop = FALSE]
+  abs(colMeans(a) - colMeans(b)) /
+    sqrt(apply(a, 2, var) / nrow(a) + apply(b, 2, var) / nrow(b))
+}
+
+auc &lt;- function(score, lab) {
+  r &lt;- rank(score); n1 &lt;- sum(lab); n0 &lt;- length(lab) - n1
+  (sum(r[lab == 1]) - n1 * (n1 + 1) / 2) / (n1 * n0)
+}
+
+folds &lt;- split(sample(seq_along(y)), rep(1:5, length.out = length(y)))
+lab   &lt;- as.integer(y) - 1</code></pre>
+<div id="the-leaky-analysis" class="section level3">
+<h3>The leaky analysis</h3>
+<p>The genes are chosen <strong>once, using every sample</strong>. Only
+the classifier is cross-validated:</p>
+<pre class="r"><code>top &lt;- order(tscore(X, y), decreasing = TRUE)[1:10]
+
+p &lt;- rep(NA, length(y))
+for (f in folds) {
+  dtr  &lt;- data.frame(y = y[-f], X[-f, top])
+  dte  &lt;- data.frame(X[f, top])
+  fit  &lt;- suppressWarnings(glm(y ~ ., data = dtr, family = binomial))
+  p[f] &lt;- predict(fit, dte, type = &quot;response&quot;)
+}
+auc_leaky &lt;- auc(p, lab)
+auc_leaky</code></pre>
+<pre><code>## [1] 0.8260759</code></pre>
+</div>
+<div id="the-honest-analysis" class="section level3">
+<h3>The honest analysis</h3>
+<p>Identical, except the genes are chosen <strong>inside each
+fold</strong>, from training data only. One line moves:</p>
+<pre class="r"><code>p &lt;- rep(NA, length(y))
+for (f in folds) {
+  top  &lt;- order(tscore(X[-f, ], y[-f]), decreasing = TRUE)[1:10]
+  dtr  &lt;- data.frame(y = y[-f], X[-f, top])
+  dte  &lt;- data.frame(X[f, top])
+  fit  &lt;- suppressWarnings(glm(y ~ ., data = dtr, family = binomial))
+  p[f] &lt;- predict(fit, dte, type = &quot;response&quot;)
+}
+auc_honest &lt;- auc(p, lab)
+auc_honest</code></pre>
+<pre><code>## [1] 0.5270886</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">analysis</th>
+<th align="right">AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Leaky: genes chosen on all samples</td>
+<td align="right">0.826</td>
+</tr>
+<tr class="even">
+<td align="left">Honest: genes chosen inside each fold</td>
+<td align="right">0.527</td>
+</tr>
+</tbody>
+</table>
+<p>The outcome was randomized, so the honest number is the truth: this
+classifier knows nothing. The leaky pipeline reports a strong biomarker
+signature manufactured entirely out of noise.</p>
+</div>
+<div id="try-it-yourself" class="section level3">
+<h3>Try it yourself</h3>
+<ol style="list-style-type: decimal">
+<li>Re-run with the real (unshuffled) <code>TB_Status</code> and only
+the 107 real genes. The two numbers will be nearly identical. Why? A
+curated panel has little noise left to exploit — the bias grows with the
+number of candidate features, which is exactly the setting of a
+genome-wide study.</li>
+<li>Change the number of noise genes from 1893 to 500, and then to
+10000. How does the leaky AUC move?</li>
+<li>Move a <em>different</em> step outside the loop — scale the columns
+of <code>X</code> once at the start instead of within each fold. How
+much does that leak on its own?</li>
+</ol>
+<p>The general rule: <strong>every data-dependent step belongs inside
+the resampling loop.</strong> In <code>caret</code> that means passing
+<code>preProcess</code> to <code>train()</code> rather than transforming
+the data beforehand; in tidymodels it means a <code>recipe</code>; in
+Python it means a <code>Pipeline</code>.</p>
+</div>
+</div>
 <div id="session-info" class="section level2">
-<h2>12. Session info</h2>
+<h2>13. Session info</h2>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 4.5.2 (2025-10-31)
 ## Platform: aarch64-apple-darwin20
-## Running under: macOS Tahoe 26.5.1
+## Running under: macOS Tahoe 26.6.2
 ## 
 ## Matrix products: default
 ## BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib 
@@ -10542,7 +10666,7 @@ ens_roc &lt;- roc(test_data$TB_Status, ens_probs, levels = rev(levels(test_data$
 ## locale:
 ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
 ## 
-## time zone: America/New_York
+## time zone: Asia/Qatar
 ## tzcode source: internal
 ## 
 ## attached base packages:

@@ -1,5 +1,5 @@
 ---
-title: "Dimension Reduction Examples in R"
+title: "Tutorial: Dimension Reduction in R"
 author: W. Evan Johnson
 date: "`r Sys.Date()`"
 output:

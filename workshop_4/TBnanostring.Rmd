@@ -1,5 +1,5 @@
 ---
-title: "TB Nanostring Analysis"
+title: "Tutorial: TB NanoString Analysis"
 author: "W. Evan Johnson"
 date: "`r Sys.Date()`"
 output:
@@ -19,7 +19,7 @@ library(tidyverse)
 library(kernlab)
 ```
 
-## Additional practice: TB Nanostring Analysis
+## Working with the TB NanoString data
 
 The `TBnanostring.rds` dataset contains gene expression measurements in the blood for 107 TB-related genes for 179 patients with either active tuberculosis infection (TB) or latent TB infection (LTBI) from one of [Dr. Johnson's publications](https://pubmed.ncbi.nlm.nih.gov/35015839/). When you Load these data into R ( `TBnanostring <- readRDS("TBnanostring.rds")`) the TB status is found in the first column of the data frame, followed by the genes in the subsequent columns. The rows represent each individual patient. 
 

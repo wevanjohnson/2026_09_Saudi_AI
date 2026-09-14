@@ -1,5 +1,5 @@
 ---
-title: "Machine Learning Examples in R"
+title: "Tutorial: Machine Learning in R"
 author: W. Evan Johnson
 date: "`r Sys.Date()`"
 output:

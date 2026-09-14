@@ -1,10 +1,10 @@
 ---
-title: "Regularization Examples"
+title: "Tutorial: Regularization with `glmnet`"
 author: | 
   | W. Evan Johnson, Ph.D.
   | Professor, Division of Infectious Disease
   | Director, Center for Data Science
-  | Co-Direcor, Center for Biomedical Informatics and Health AI
+  | Associate Director, Center for Biomedical Informatics and Health AI
   | Rutgers University -- New Jersey Medical School
 date: "`r Sys.Date()`"
 output:

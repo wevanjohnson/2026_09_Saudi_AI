@@ -117,8 +117,8 @@ and each step maps onto `scikit-learn`.
 | :--- | :---- | :--- |
 | `workshop_1/` | Dimension reduction: PCA, UMAP, and visualization with `ggplot2` | Lecture 1 |
 | `workshop_2/` | Support vector machines, decision trees, and random forests | Lecture 2 |
-| `workshop_3/` | Machine learning with `caret`: data partitioning, cross-validation, ROC and AUC across six algorithms; regularization with `glmnet` | Lecture 3 |
-| `workshop_4/` | Additional practice with the TB NanoString data | Lecture 4 |
+| `workshop_3/` | Machine learning with `caret`: data partitioning, cross-validation, ROC and AUC across six algorithms; **a worked data-leakage demonstration**; regularization with `glmnet` | Lecture 3 |
+| `workshop_4/` | Working with the TB NanoString data | Lecture 4 |
 | `workshop_capstone/` | End-to-end applied analysis of RePORT India TB data: elastic net, SVM, and random forest compared | All lectures |
 
 ## Data
