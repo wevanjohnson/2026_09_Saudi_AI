@@ -12,6 +12,7 @@ Health Artificial Intelligence (BMIHAI).
 * **Time:** 8:00 AM – 4:00 PM (8 hours)
 * **Location:** KAIMRC Academy, Riyadh, Saudi Arabia
 * **Format:** Short course, 20–25 participants
+* 🎓 A **joint Certificate of Completion** is awarded by Rutgers University and KAIMRC Academy
 
 ## Things you should know about this bootcamp
 
